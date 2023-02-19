@@ -1,9 +1,13 @@
+using API_ProjFinal_Eventos.Filters;
 using AutoMapper;
 using CityEvents.Infra.Data.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CityEvents.Service.Dto;
 using CityEvents.Service.Entity;
 using CityEvents.Service.Interface;
 using CityEvents.Service.Service;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace API_ProjFinal_Eventos
 {
@@ -19,6 +23,29 @@ namespace API_ProjFinal_Eventos
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+     
+            var chaveCripto = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("SECRET_KEY"));
+            //Add JWT
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                        .AddJwtBearer(options =>
+                        {
+                            options.TokenValidationParameters = new TokenValidationParameters
+                            {
+                                ValidateIssuerSigningKey = true,
+                                IssuerSigningKey = new SymmetricSecurityKey(chaveCripto),
+                                ValidateIssuer = true,
+                                ValidIssuer = "APIPessoa.com",
+                                ValidateAudience = true,
+                                ValidAudience = "EventosApi.com"
+                            };
+                        });
+
+            //Add Filters
+            builder.Services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ExcecaoGeralFilter));
+            });
 
             builder.Services.AddScoped<ICityEventRepository, CityEventRepository>();
             builder.Services.AddScoped<ICityEventService, CityEventService>();

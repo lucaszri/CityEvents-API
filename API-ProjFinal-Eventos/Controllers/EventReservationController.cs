@@ -1,5 +1,7 @@
-﻿using CityEvents.Service.Dto;
+﻿using API_ProjFinal_Eventos.Filters;
+using CityEvents.Service.Dto;
 using CityEvents.Service.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +21,8 @@ namespace API_ProjFinal_Eventos.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+        [TypeFilter(typeof(ExcecaoGeralFilter))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<EventReservationDto>> SearchReservation(string personName, string title)
@@ -27,6 +31,8 @@ namespace API_ProjFinal_Eventos.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        [TypeFilter(typeof(ExcecaoGeralFilter))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<bool>> AddReservation(EventReservationDto eventReservation)
@@ -39,6 +45,8 @@ namespace API_ProjFinal_Eventos.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "admin")]
+        [TypeFilter(typeof(ExcecaoGeralFilter))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<bool>> EditReservation(int quantity, int idReservation)
@@ -51,6 +59,8 @@ namespace API_ProjFinal_Eventos.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "admin")]
+        [TypeFilter(typeof(ExcecaoGeralFilter))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<bool>> DeleteReservation(int idReservation)
